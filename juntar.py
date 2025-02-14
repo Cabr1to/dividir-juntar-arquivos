@@ -1,4 +1,5 @@
 import os
+import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import winreg  # Módulo para manipular o registro do Windows
@@ -6,13 +7,15 @@ import winreg  # Módulo para manipular o registro do Windows
 def adicionar_menu_contexto():
     try:
         # Caminho para o executável
-        caminho_exe = os.path.abspath(__file__)  # Pega o caminho do script atual
-        if caminho_exe.endswith('.exe'):
-            caminho_exe = os.path.abspath(sys.argv[0])  # Pega o caminho do executável
+        if getattr(sys, 'frozen', False):
+            # Se estiver rodando como executável
+            caminho_exe = os.path.abspath(sys.argv[0])
+        else:
+            # Se estiver rodando como script
+            caminho_exe = os.path.abspath(__file__)
 
         # Cria a chave no registro
-        chave = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, "*\shell\JuntarArquivos\command", 0, winreg.KEY_ALL_ACCESS)
-        chave = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT)
+        chave = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT, r"*\shell\JuntarArquivos\command")
         winreg.SetValue(chave, '', winreg.REG_SZ, f'"{caminho_exe}" "%1"')
         winreg.CloseKey(chave)
 
