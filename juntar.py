@@ -1,6 +1,23 @@
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import winreg  # Módulo para manipular o registro do Windows
+
+def adicionar_menu_contexto():
+    try:
+        # Caminho para o executável
+        caminho_exe = os.path.abspath(__file__)  # Pega o caminho do script atual
+        if caminho_exe.endswith('.exe'):
+            caminho_exe = os.path.abspath(sys.argv[0])  # Pega o caminho do executável
+
+        # Cria a chave no registro
+        chave = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT, r"*\shell\JuntarArquivos\command")
+        winreg.SetValue(chave, '', winreg.REG_SZ, f'"{caminho_exe}" "%1"')
+        winreg.CloseKey(chave)
+
+        messagebox.showinfo("Sucesso", "Opção 'Juntar Arquivos' adicionada ao menu de contexto!")
+    except Exception as e:
+        messagebox.showerror("Erro", f"Ocorreu um erro ao adicionar ao menu de contexto: {e}")
 
 def juntar_arquivos(primeira_parte):
     try:
@@ -55,5 +72,11 @@ def selecionar_primeira_parte():
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()  # Oculta a janela principal do tkinter
+
+    # Adiciona a opção ao menu de contexto (se não estiver presente)
+    try:
+        winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"*\shell\JuntarArquivos")
+    except FileNotFoundError:
+        adicionar_menu_contexto()
+
     selecionar_primeira_parte()
-    
