@@ -11,7 +11,8 @@ def adicionar_menu_contexto():
             caminho_exe = os.path.abspath(sys.argv[0])  # Pega o caminho do executável
 
         # Cria a chave no registro
-        chave = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT, r"*\shell\JuntarArquivos\command")
+        chave = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, "*\shell\JuntarArquivos\command", 0, winreg.KEY_ALL_ACCESS)
+        chave = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT)
         winreg.SetValue(chave, '', winreg.REG_SZ, f'"{caminho_exe}" "%1"')
         winreg.CloseKey(chave)
 
