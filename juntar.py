@@ -1,8 +1,16 @@
+import ctypes
 import os
 import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import winreg  # Módulo para manipular o registro do Windows
+
+def is_admin():
+    """Verifica se o script está sendo executado como administrador."""
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 
 def adicionar_menu_contexto():
     try:
