@@ -82,13 +82,17 @@ def selecionar_primeira_parte():
         juntar_arquivos(primeira_parte)
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.withdraw()  # Oculta a janela principal do tkinter
+    if is_admin():
+        root = tk.Tk()
+        root.withdraw()  # Oculta a janela principal do tkinter
 
-    # Adiciona a opção ao menu de contexto (se não estiver presente)
-    try:
-        winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"*\shell\JuntarArquivos")
-    except FileNotFoundError:
-        adicionar_menu_contexto()
+        # Adiciona a opção ao menu de contexto (se não estiver presente)
+        try:
+            winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"*\shell\JuntarArquivos")
+        except FileNotFoundError:
+            adicionar_menu_contexto()
 
-    selecionar_primeira_parte()
+        selecionar_primeira_parte()
+    else:
+        # Se não estiver rodando como administrador, solicita elevação
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
